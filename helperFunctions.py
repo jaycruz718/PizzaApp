@@ -72,6 +72,7 @@ def save_audio(file, file_name):
 
         
 def speech_to_text(file_name):
+<<<<<<< HEAD
     # speech url
     speech_to_text_url = "https://sn-watson-stt.labs.skills.network/speech-to-text/api/v1/recognize"
     # set up the headers for audio format
@@ -89,6 +90,24 @@ def speech_to_text(file_name):
         for transcript in r["alternatives"]:
             output = output + " " + transcript["transcript"]
     return output
+=======
+   speech_to_text = "https://sn-watson-stt.labs.skills.network/speech-to-text/api/v1/recognize"
+   
+   headers = {"Content-Type": "audio/wav"}
+   
+   params = {"model": "en-US_Multimedia", "smart_formatting": "true", "background_audio_suppression": "0.6"}
+
+   result = requests.post(speech_to_text_url, headers=headers, params=params, data=open(file_name, 'rb'))
+
+   output = ""
+   json_obj = json.loads(result.text)
+   results_data = json_obj["results"]
+   for r in results_data:
+       for transcript in r["alternatives"]:
+           output = output + " " + transcript["transcript"]
+   return output 
+
+>>>>>>> f8cdc6b (Initial pizza chatbot setup)
 
 
 def text_to_speech(texts, name, language):
