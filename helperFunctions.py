@@ -71,43 +71,33 @@ def save_audio(file, file_name):
         print("file uploaded successfully")
 
         
-def speech_to_text(file_name):
-<<<<<<< HEAD
-    # speech url
+def speech_to_text(file_name: str) -> str:
+    # IBM Skills Network Watson STT endpoint
     speech_to_text_url = "https://sn-watson-stt.labs.skills.network/speech-to-text/api/v1/recognize"
-    # set up the headers for audio format
+
+    # Headers and params for WAV audio
     headers = {"Content-Type": "audio/wav"}
-    # set up parameters
-    params = {"model": "en-US_Multimedia", "smart_formatting": "true", "background_audio_suppression": "0.6"}
-    # method to get the Voice data from the text service
-    result = requests.post(speech_to_text_url, headers=headers, params=params, data=open(file_name, 'rb'))
+    params = {"model": "en-US_Multimedia", "smart_formatting": "true"}
 
-    # get transcript from json result
+    # Send audio file to the service
+    with open(file_name, "rb") as audio_file:
+        result = requests.post(
+            speech_to_text_url,
+            headers=headers,
+            params=params,
+            data=audio_file
+        )
+
+    # Parse response
     output = ""
-    json_obj = json.loads(result.text)
-    results_data = json_obj["results"]
+    json_obj = result.json()
+    results_data = json_obj.get("results", [])
+
     for r in results_data:
-        for transcript in r["alternatives"]:
-            output = output + " " + transcript["transcript"]
-    return output
-=======
-   speech_to_text = "https://sn-watson-stt.labs.skills.network/speech-to-text/api/v1/recognize"
-   
-   headers = {"Content-Type": "audio/wav"}
-   
-   params = {"model": "en-US_Multimedia", "smart_formatting": "true", "background_audio_suppression": "0.6"}
+        for alt in r.get("alternatives", []):
+            output += " " + alt.get("transcript", "")
 
-   result = requests.post(speech_to_text_url, headers=headers, params=params, data=open(file_name, 'rb'))
-
-   output = ""
-   json_obj = json.loads(result.text)
-   results_data = json_obj["results"]
-   for r in results_data:
-       for transcript in r["alternatives"]:
-           output = output + " " + transcript["transcript"]
-   return output 
-
->>>>>>> f8cdc6b (Initial pizza chatbot setup)
+    return output.strip()
 
 
 def text_to_speech(texts, name, language):
